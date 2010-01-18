@@ -1,6 +1,7 @@
 package uk.co.darrenhurley.processing;
 
 import processing.core.*;
+import com.processinghacks.arcball.*;
 import java.util.*;
 
 /**
@@ -14,10 +15,10 @@ public class Brownian3d extends PApplet
 	
 	int trailLength = 300;
 	int trailDisplacement = 5;
-	int floorSize = 30;
-	int depth = 10;
+	int floorSize = 110;
+	int depth = 40;
 	float alphaIncrement;
-
+	
 	public void setup()
 	{
 		size(1000, 500, P3D);
@@ -33,6 +34,11 @@ public class Brownian3d extends PApplet
 		background(50);
 		fill(60);
 		
+		mouseX = 1;
+		mouseY = height/2;
+		
+		ArcBall arcball = new ArcBall(width/2, height/2, 0, min(width/2,height/2), this);
+		
 	}
 
 	public void draw()
@@ -40,11 +46,7 @@ public class Brownian3d extends PApplet
 		
 		background(50);
 		
-		camera(
-			mouseX, mouseY - height, 100, // eyeX, eyeY, eyeZ
-			0, 0, 0, // centerX, centerY, centerZ
-			0, 1.0f, 0 // upX, upY, upZ
-		);
+		translate(width/2, height/2, 0);
 		
 		// calculate the new points
 		int newX = points.get(0)[0] + (int) random(-trailDisplacement, trailDisplacement);
@@ -77,23 +79,24 @@ public class Brownian3d extends PApplet
 			}
 			
 			// calculate the stroke opacity (older points are have more transparency)
-			float alpha = 255 - (alphaIncrement * (i - 1));
+			float strokeAlpha = 255 - (alphaIncrement * i);
 			
 			Integer[] firstPoint = points.get(i);
 			Integer[] secondPoint = points.get(i - 1);
 			
-			stroke(255, alpha);
+			stroke(255, strokeAlpha);
+			strokeCap(ROUND);
+			strokeWeight(5);
 			
 			line(firstPoint[0], firstPoint[1], firstPoint[2], secondPoint[0], secondPoint[1], secondPoint[2]);
 			
 		}
 		
-		pushMatrix();
-		translate(0, depth + 1, 0);
-		rotateX(PI/2);
-		stroke(50);
-		box(floorSize * 2, floorSize * 2, 1);
-		popMatrix();
+		
+		stroke(255);
+		strokeWeight(1);
+		noFill();
+		box(floorSize * 2, depth * 2, floorSize * 2);
 		
 	}
 
